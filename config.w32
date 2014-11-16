@@ -1,0 +1,13 @@
+// $Id$
+// vim:ft=javascript
+
+// If your extension references something external, use ARG_WITH
+// ARG_WITH("opencc", "for opencc support", "no");
+
+// Otherwise, use ARG_ENABLE
+// ARG_ENABLE("opencc", "enable opencc support", "no");
+
+if (PHP_OPENCC != "no") {
+	EXTENSION("opencc", "opencc.c");
+}
+
