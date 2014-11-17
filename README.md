@@ -8,14 +8,14 @@ opencc4php 是[OpenCC](https://github.com/BYVoid/OpenCC)的PHP扩展，能很智
 `我鼠标哪儿去了` => `我滑鼠哪兒去了`
 
 #安装
-你需要线安装OpenCC 1.0.1 版本以上,安装OpenCC：
+你需要先安装`1.0.1` 版本以上的OpenCC，安装OpenCC：
 ```
 git clone https://github.com/BYVoid/OpenCC.git
 cd OpenCC
 make
 sudo make install
 ```
-安装opencc4php:
+安装opencc4php：
 ```
 git clone git@github.com:NauxLiu/opencc4php.git
 cd opencc4php
