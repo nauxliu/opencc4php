@@ -23,10 +23,11 @@ phpize
 ./configure
 make && sudo make install
 ```
+>如果你的OpenCC安装目录不在`/usr`或`/usr/local`，可在`./configure`时添加`--with-opencc=[DIR]`指定你的OpenCC目录
 
 #使用
 
-###简单例子：
+###实例：
 ```php
 $od = opencc_open("s2twp.json"); //传入配置文件名
 $text = opencc_convert("我鼠标哪儿去了。", $od);
