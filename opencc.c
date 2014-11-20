@@ -82,7 +82,7 @@ PHP_FUNCTION(opencc_close)
 
 	if(res == 0)
 	{
-		efree(zod);
+		zod->type = IS_NULL;
 		RETURN_TRUE;
 	}
 	else
