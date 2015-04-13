@@ -61,7 +61,11 @@ PHP_FUNCTION(opencc_open)
 	{
 		RETURN_FALSE;
 	}
-	RETURN_RESOURCE((long) od);
+	#ifdef ZEND_ENGINE_3
+	RETURN_RES(zend_register_resource((long)od, le_opencc));
+	#else
+	RETURN_RESOURCE((long)od);
+	#endif
 }
 /* }}} */
 
@@ -72,17 +76,27 @@ PHP_FUNCTION(opencc_close)
 	int argc = ZEND_NUM_ARGS();
 	int ob_id = -1;
 	zval *zod = NULL;
+	opencc_t od;
 
 	if (zend_parse_parameters(argc TSRMLS_CC, "r", &zod) == FAILURE)
 		return;
 
-	opencc_t od = zod->value.lval;
+	#ifdef ZEND_ENGINE_3
+	if ((od = (opencc_t)zend_fetch_resource(Z_RES_P(zod), "OpenCC", le_opencc)) == NULL)
+		RETURN_FALSE;
+	#else
+	od = (opencc_t)zod->value.lval;
+	#endif
 
 	int res = opencc_close(od);
 
 	if(res == 0)
 	{
-		zod->type = IS_NULL;
+		#ifdef ZEND_ENGINE_3
+		Z_TYPE_INFO_P(zod) = IS_NULL;//wtf
+		#else
+		Z_TYPE_P(zod) = IS_NULL;
+		#endif
 		RETURN_TRUE;
 	}
 	else
@@ -104,7 +118,13 @@ PHP_FUNCTION(opencc_error)
 	}
 	msg = opencc_error();
 	len = strlen(msg);
+	#ifdef ZEND_ENGINE_3
+	zend_string *ret = zend_string_alloc(len, 0);
+	strncpy(ret->val, msg, len);
+	RETURN_STR(ret);
+	#else
 	RETURN_STRINGL(msg, len, 0);
+	#endif
 }
 /* }}} */
 
@@ -122,15 +142,29 @@ PHP_FUNCTION(opencc_convert)
 	if (zend_parse_parameters(argc TSRMLS_CC, "sr", &str, &str_len, &zod) == FAILURE) 
 		return;
 
+	#ifdef ZEND_ENGINE_3
+	if ((od = (opencc_t)zend_fetch_resource(Z_RES_P(zod), "OpenCC", le_opencc)) == NULL)
+		RETURN_FALSE;
+	#else
 	od = (opencc_t)zod->value.lval;
+	#endif
 
 	char * outstr = opencc_convert_utf8(od, str, -1);
 
 	int len = strlen(outstr);
+	#ifdef ZEND_ENGINE_3
+	zend_string *ret = zend_string_alloc(len, 0);
+	strncpy(ret->val, outstr, len + 1);
+	#else
 	char * rs = emalloc(sizeof(char) * (len + 1));
 	strncpy(rs, outstr, len + 1);
+	#endif
 	opencc_convert_utf8_free(outstr);
+	#ifdef ZEND_ENGINE_3
+	RETURN_STR(ret);
+	#else
 	RETURN_STRINGL(rs, len, 0);
+	#endif
 }
 /* }}} */
 
