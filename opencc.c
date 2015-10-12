@@ -1,8 +1,8 @@
 /*
   +----------------------------------------------------------------------+
-  | PHP Version 5                                                        |
+  | PHP Version 7                                                        |
   +----------------------------------------------------------------------+
-  | Copyright (c) 1997-2014 The PHP Group                                |
+  | Copyright (c) 1997-2015 The PHP Group                                |
   +----------------------------------------------------------------------+
   | This source file is subject to version 3.01 of the PHP license,      |
   | that is bundled with this package in the file LICENSE, and is        |
@@ -32,7 +32,7 @@ ZEND_DECLARE_MODULE_GLOBALS(opencc)
 */
 
 /* True global resources - no need for thread safety here */
-static int le_opencc;
+int le_opencc;
 
 /* {{{ PHP_INI
  */
@@ -187,6 +187,9 @@ PHP_MINIT_FUNCTION(opencc)
 	/* If you have INI entries, uncomment these lines 
 	REGISTER_INI_ENTRIES();
 	*/
+	#ifdef ZEND_ENGINE_3
+	le_opencc = zend_register_list_destructors_ex(NULL, NULL, "opencc_od", module_number);
+	#endif
 	return SUCCESS;
 }
 /* }}} */
