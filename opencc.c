@@ -258,8 +258,8 @@ zend_module_entry opencc_module_entry = {
 	opencc_functions,
 	PHP_MINIT(opencc),
 	PHP_MSHUTDOWN(opencc),
-	PHP_RINIT(opencc),		/* Replace with NULL if there's nothing to do at request start */
-	PHP_RSHUTDOWN(opencc),	/* Replace with NULL if there's nothing to do at request end */
+	NULL,
+	NULL,
 	PHP_MINFO(opencc),
 	PHP_OPENCC_VERSION,
 	STANDARD_MODULE_PROPERTIES

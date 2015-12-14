@@ -10,14 +10,14 @@ opencc4php 是[OpenCC](https://github.com/BYVoid/OpenCC)的PHP扩展，能很智
 #安装
 你需要先安装`1.0.1` 版本以上的OpenCC，安装OpenCC：
 ```
-git clone https://github.com/BYVoid/OpenCC.git
+git clone https://github.com/BYVoid/OpenCC.git --depth 1
 cd OpenCC
 make
 sudo make install
 ```
 安装opencc4php：
 ```
-git clone git@github.com:NauxLiu/opencc4php.git
+git clone git@github.com:NauxLiu/opencc4php.git --depth 1
 cd opencc4php
 phpize
 ./configure
