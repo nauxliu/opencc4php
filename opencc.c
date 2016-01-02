@@ -1,6 +1,6 @@
 /*
   +----------------------------------------------------------------------+
-  | PHP Version 7 New                                                    |
+  | PHP Version 7.0.1 (Backward-Compatiable)                             |
   +----------------------------------------------------------------------+
   | Copyright (c) 1997-2015 The PHP Group                                |
   +----------------------------------------------------------------------+
@@ -94,7 +94,7 @@ PHP_FUNCTION(opencc_close)
 	if ((od = (opencc_t)zend_fetch_resource(Z_RES_P(zod), "OpenCC", le_opencc)) == NULL) {
 		RETURN_FALSE;
 	}
-	#endi
+	#endif
 	int res = opencc_close(od);
 
 	if(res == 0) {
