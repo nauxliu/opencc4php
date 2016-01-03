@@ -2,7 +2,9 @@
 
 [![Build Status](https://travis-ci.org/NauxLiu/opencc4php.svg?branch=master)](https://travis-ci.org/NauxLiu/opencc4php)
 
-opencc4php 是[OpenCC](https://github.com/BYVoid/OpenCC)的PHP扩展，能很智能的完成简繁体转换
+opencc4php 是[OpenCC](https://github.com/BYVoid/OpenCC)的PHP扩展，能很智能的完成简繁体转换。 
+
+支持 PHP 版本： 5.3 - 7.0
 
 转换效果：
 `你干什么不干我事` => `你幹什麼不干我事`
@@ -59,6 +61,6 @@ opencc_close($od);
 * `tw2sp.json` 繁体（台湾正体标准）到简体并转换为中国大陆常用词汇
 
 # 贡献列表
-[@刘相轩](https://github.com/NauxLiu)
-[@Kyle Tse](https://github.com/shtse8)
-[@Alliumcepa Triplef](https://github.com/fffonion)
+[@刘相轩](https://github.com/NauxLiu)  
+[@Kyle Tse](https://github.com/shtse8)  
+[@Alliumcepa Triplef](https://github.com/fffonion)  
