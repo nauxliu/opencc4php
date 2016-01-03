@@ -21,9 +21,11 @@ notifications:
 env:
   - REPORT_EXIT_STATUS=1 NO_INTERACTION=1
 
+sudo: true
+
 #Compile
 before_script:
-    - ./travis/compile.sh
+    - sudo ./travis/compile.sh
 
 script:
     - exit 0
