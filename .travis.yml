@@ -2,7 +2,6 @@ language: php
 
 compiler:
   - gcc
-  - clang
 
 os:
   - linux
@@ -22,6 +21,10 @@ env:
   - REPORT_EXIT_STATUS=1 NO_INTERACTION=1
 
 sudo: true
+
+before_install:
+  - sudo apt-get install doxygen -y
+  - sudo ./travis/install_opencc.sh
 
 #Compile
 before_script:
