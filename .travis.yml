@@ -22,7 +22,10 @@ env:
 
 sudo: true
 
-before_install:
+brefor_install:
+  - sudo apt-get update
+
+install:
   - sudo apt-get install doxygen -y
   - sudo ./travis/install_opencc.sh
 
