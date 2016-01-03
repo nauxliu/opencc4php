@@ -22,7 +22,7 @@ env:
 
 sudo: true
 
-brefor_install:
+before_install:
   - sudo apt-get update
 
 install:
