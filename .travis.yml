@@ -29,9 +29,11 @@ install:
   - sudo apt-get install doxygen -y
   - sudo ./travis/install_opencc.sh
 
-#Compile
 before_script:
-    - sudo ./travis/compile.sh
+    - phpize
+    - ./configure --quiet
+    - make clean
+    - make
 
 script:
     - exit 0
