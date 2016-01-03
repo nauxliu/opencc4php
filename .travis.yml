@@ -17,13 +17,13 @@ php:
 
 notifications:
   email: nauxliu@gmail.com
-   
+
 env:
   - REPORT_EXIT_STATUS=1 NO_INTERACTION=1
 
 #Compile
 before_script:
-    - phpize && ./configure && make clean && make
+    - ./travis/compile.sh
 
 script:
     - exit 0
