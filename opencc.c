@@ -49,7 +49,7 @@ PHP_INI_END()
 PHP_FUNCTION(opencc_open)
 {
 	opencc_t od;
-	
+
 	#if PHP_MAJOR_VERSION < 7
 		char *config = NULL;
 		int config_len;
@@ -119,11 +119,11 @@ PHP_FUNCTION(opencc_error)
 	if (zend_parse_parameters_none() == FAILURE) {
 		return;
 	}
-	
+
 	const char *msg;
 	msg = opencc_error();
 	len = strlen(msg);
-	
+
 	#if PHP_MAJOR_VERSION < 7
 	RETURN_STRINGL(msg, len, 0);
 	#else
@@ -142,7 +142,7 @@ PHP_FUNCTION(opencc_convert)
 	zval *zod;
 	opencc_t od;
 	char *outstr;
-	
+
 	#if PHP_MAJOR_VERSION < 7
 	char *str = NULL;
 	int str_len;
@@ -150,35 +150,35 @@ PHP_FUNCTION(opencc_convert)
 		return;
 	}
 	od = (opencc_t)zod->value.lval;
-	
+
 	outstr = opencc_convert_utf8(od, str, -1);
+
+	int len = strlen(outstr);
+
+	char * rs = emalloc(sizeof(char) * (len + 1));
+	strncpy(rs, outstr, len + 1);
+	opencc_convert_utf8_free(outstr);
+
+	RETURN_STRINGL(rs, len, 0);
 	#else
 	zend_string *str;
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "Sr", &str, &zod) == FAILURE) {
 		return;
 	}
-	
+
 	if ((od = (opencc_t)zend_fetch_resource(Z_RES_P(zod), "OpenCC", le_opencc)) == NULL) {
 		RETURN_FALSE;
 	}
-	
+
 	outstr = opencc_convert_utf8(od, str->val, -1);
-	#endif
-	
 	int len = strlen(outstr);
-	
-	#if PHP_MAJOR_VERSION < 7
-	char * rs = emalloc(sizeof(char) * (len + 1));
-	strncpy(rs, outstr, len + 1);
-	#else
+
 	zend_string *ret = zend_string_alloc(len, 0);
 	strncpy(ret->val, outstr, len + 1);
-	#endif
-	
 	opencc_convert_utf8_free(outstr);
-	
+
 	RETURN_STR(ret);
-	
+	#endif
 }
 /* }}} */
 
@@ -198,7 +198,7 @@ static void php_opencc_init_globals(zend_opencc_globals *opencc_globals)
  */
 PHP_MINIT_FUNCTION(opencc)
 {
-	/* If you have INI entries, uncomment these lines 
+	/* If you have INI entries, uncomment these lines
 	REGISTER_INI_ENTRIES();
 	*/
 	#ifdef ZEND_ENGINE_3
