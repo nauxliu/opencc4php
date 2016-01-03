@@ -1,6 +1,6 @@
 /*
   +----------------------------------------------------------------------+
-  | PHP Version 7                                                        |
+  | PHP Version 7.0.1 (Backward-Compatiable)                             |
   +----------------------------------------------------------------------+
   | Copyright (c) 1997-2015 The PHP Group                                |
   +----------------------------------------------------------------------+
@@ -48,23 +48,29 @@ PHP_INI_END()
     */
 PHP_FUNCTION(opencc_open)
 {
-	char *config = NULL;
-	int argc = ZEND_NUM_ARGS();
-	int config_len;
 	opencc_t od;
-
-	if (zend_parse_parameters(argc TSRMLS_CC, "s", &config, &config_len) == FAILURE) 
-		return;
-
-	od = opencc_open(config);
-	if(od == (opencc_t) -1 )
-	{
+	
+	#if PHP_MAJOR_VERSION < 7
+		char *config = NULL;
+		int config_len;
+		if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &config, &config_len) == FAILURE) {
+			return;
+		}
+		od = opencc_open(config);
+	#else
+		zend_string *config;
+		if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "S", &config) == FAILURE) {
+			return;
+		}
+		od = opencc_open(config->val);
+	#endif
+	if( od == (opencc_t) -1 ) {
 		RETURN_FALSE;
 	}
-	#ifdef ZEND_ENGINE_3
-	RETURN_RES(zend_register_resource((long)od, le_opencc));
+	#if PHP_MAJOR_VERSION < 7
+		RETURN_RESOURCE((long) od);
 	#else
-	RETURN_RESOURCE((long)od);
+		RETURN_RES(zend_register_resource(od, le_opencc));
 	#endif
 }
 /* }}} */
@@ -78,29 +84,27 @@ PHP_FUNCTION(opencc_close)
 	zval *zod = NULL;
 	opencc_t od;
 
-	if (zend_parse_parameters(argc TSRMLS_CC, "r", &zod) == FAILURE)
+	if (zend_parse_parameters(argc TSRMLS_CC, "r", &zod) == FAILURE) {
 		return;
+	}
 
-	#ifdef ZEND_ENGINE_3
-	if ((od = (opencc_t)zend_fetch_resource(Z_RES_P(zod), "OpenCC", le_opencc)) == NULL)
-		RETURN_FALSE;
-	#else
+	#if PHP_MAJOR_VERSION < 7
 	od = (opencc_t)zod->value.lval;
+	#else
+	if ((od = (opencc_t)zend_fetch_resource(Z_RES_P(zod), "OpenCC", le_opencc)) == NULL) {
+		RETURN_FALSE;
+	}
 	#endif
-
 	int res = opencc_close(od);
 
-	if(res == 0)
-	{
-		#ifdef ZEND_ENGINE_3
-		Z_TYPE_INFO_P(zod) = IS_NULL;//wtf
-		#else
+	if(res == 0) {
+		#if PHP_MAJOR_VERSION < 7
 		Z_TYPE_P(zod) = IS_NULL;
+		#else
+		Z_TYPE_INFO_P(zod) = IS_NULL;//wtf
 		#endif
 		RETURN_TRUE;
-	}
-	else
-	{
+	} else {
 		RETURN_FALSE;
 	}
 }
@@ -110,20 +114,22 @@ PHP_FUNCTION(opencc_close)
     */
 PHP_FUNCTION(opencc_error)
 {
-	char * msg = NULL;
 	int len;
 
 	if (zend_parse_parameters_none() == FAILURE) {
 		return;
 	}
+	
+	const char *msg;
 	msg = opencc_error();
 	len = strlen(msg);
-	#ifdef ZEND_ENGINE_3
+	
+	#if PHP_MAJOR_VERSION < 7
+	RETURN_STRINGL(msg, len, 0);
+	#else
 	zend_string *ret = zend_string_alloc(len, 0);
 	strncpy(ret->val, msg, len);
 	RETURN_STR(ret);
-	#else
-	RETURN_STRINGL(msg, len, 0);
 	#endif
 }
 /* }}} */
@@ -132,39 +138,47 @@ PHP_FUNCTION(opencc_error)
     */
 PHP_FUNCTION(opencc_convert)
 {
-	char *str = NULL;
-	int argc = ZEND_NUM_ARGS();
-	int str_len;
 //	int ob_id = -1;
-	zval *zod = NULL;
+	zval *zod;
 	opencc_t od;
-
-	if (zend_parse_parameters(argc TSRMLS_CC, "sr", &str, &str_len, &zod) == FAILURE) 
+	char *outstr;
+	
+	#if PHP_MAJOR_VERSION < 7
+	char *str = NULL;
+	int str_len;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sr", &str, &str_len, &zod) == FAILURE) {
 		return;
-
-	#ifdef ZEND_ENGINE_3
-	if ((od = (opencc_t)zend_fetch_resource(Z_RES_P(zod), "OpenCC", le_opencc)) == NULL)
-		RETURN_FALSE;
-	#else
+	}
 	od = (opencc_t)zod->value.lval;
-	#endif
-
-	char * outstr = opencc_convert_utf8(od, str, -1);
-
-	int len = strlen(outstr);
-	#ifdef ZEND_ENGINE_3
-	zend_string *ret = zend_string_alloc(len, 0);
-	strncpy(ret->val, outstr, len + 1);
+	
+	outstr = opencc_convert_utf8(od, str, -1);
 	#else
+	zend_string *str;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "Sr", &str, &zod) == FAILURE) {
+		return;
+	}
+	
+	if ((od = (opencc_t)zend_fetch_resource(Z_RES_P(zod), "OpenCC", le_opencc)) == NULL) {
+		RETURN_FALSE;
+	}
+	
+	outstr = opencc_convert_utf8(od, str->val, -1);
+	#endif
+	
+	int len = strlen(outstr);
+	
+	#if PHP_MAJOR_VERSION < 7
 	char * rs = emalloc(sizeof(char) * (len + 1));
 	strncpy(rs, outstr, len + 1);
-	#endif
-	opencc_convert_utf8_free(outstr);
-	#ifdef ZEND_ENGINE_3
-	RETURN_STR(ret);
 	#else
-	RETURN_STRINGL(rs, len, 0);
+	zend_string *ret = zend_string_alloc(len, 0);
+	strncpy(ret->val, outstr, len + 1);
 	#endif
+	
+	opencc_convert_utf8_free(outstr);
+	
+	RETURN_STR(ret);
+	
 }
 /* }}} */
 
