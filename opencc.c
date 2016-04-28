@@ -99,9 +99,9 @@ PHP_FUNCTION(opencc_close)
 
 	if(res == 0) {
 		#if PHP_MAJOR_VERSION < 7
-		Z_TYPE_P(zod) = IS_NULL;
+		zend_list_delete(Z_RESVAL_P(zod));
 		#else
-		Z_TYPE_INFO_P(zod) = IS_NULL;//wtf
+		zend_list_close(Z_RES_P(zod));
 		#endif
 		RETURN_TRUE;
 	} else {
