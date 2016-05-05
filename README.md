@@ -53,7 +53,7 @@ opencc_close($od);
 ###函数列表：
 
 `opencc_open(string ConfigName)`  ConfigName:配置文件名，成功返回资源对象，失败返回false  
-`opencc_close(resource ob)`  关闭资源对象,成功返回true，失败返回false. 
+`opencc_close(resource ob)`  关闭资源对象,成功返回true，失败返回false.   
 `opencc_error()` 返回最后一条错误信息，有错误信息返回String,无错误返回false  
 `opencc_convert(string str, resource od)` str：要转换的字符串(UTF-8)，od：opencc资源对象  
 
