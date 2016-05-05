@@ -4,7 +4,7 @@
 ARG_WITH("opencc", "for opencc support", "no");
 
 if (PHP_OPENCC != "no") {
-	if (CHECK_LIB("opencc.lib", "opencc", PHP_OPENCC) && CHECK_HEADER_ADD_INCLUDE("opencc.h", "PHP_OPENCC", PHP_OPENCC + "\\include\\opencc")) {
+	if (CHECK_LIB("opencc.lib", "opencc", PHP_OPENCC) && CHECK_HEADER_ADD_INCLUDE("opencc.h", "CFLAGS_OPENCC", PHP_OPENCC + "\\include\\opencc")) {
 		EXTENSION("opencc", "opencc.c");
 	} else {
 		WARNING ("OpenCC headers are not found, use --with-opencc=OpenCC Base Dir(where opencc.lib located)");
