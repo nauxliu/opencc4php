@@ -79,11 +79,12 @@ PHP_FUNCTION(opencc_open)
 	if( od == (opencc_t) -1 ) {
 		RETURN_FALSE;
 	}
+
+    fprintf(stderr, "store to global_opencc_handler[%p]\n", OPENCC_G(global_opencc_handler));
+	OPENCC_G(global_opencc_handler) = od;
 	#if PHP_MAJOR_VERSION < 7
 		RETURN_RESOURCE((long) od);
 	#else
-		OPENCC_G(global_opencc_handler) = od;
-		fprintf(stderr, "store to global_opencc_handler[%p]\n", OPENCC_G(global_opencc_handler));
 		RETURN_RES(zend_register_resource(od, le_opencc));
 	#endif
 }
