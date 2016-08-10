@@ -30,6 +30,8 @@
 /* If you declare any globals in php_opencc.h uncomment this:
 ZEND_DECLARE_MODULE_GLOBALS(opencc)
 */
+ZEND_DECLARE_MODULE_GLOBALS(opencc)
+
 
 /* True global resources - no need for thread safety here */
 int le_opencc;
@@ -48,7 +50,15 @@ PHP_INI_END()
     */
 PHP_FUNCTION(opencc_open)
 {
-	opencc_t od;
+	opencc_t od = OPENCC_G(global_opencc_handler);
+	if(od != (opencc_t) -1) {
+		// fprintf(stderr, "reuse opencc handler [%p]\n", od);
+		#if PHP_MAJOR_VERSION < 7
+			RETURN_RESOURCE((long) od);
+		#else
+			RETURN_RES(zend_register_resource(od, le_opencc));
+		#endif
+	}
 
 	#if PHP_MAJOR_VERSION < 7
 		char *config = NULL;
@@ -67,6 +77,9 @@ PHP_FUNCTION(opencc_open)
 	if( od == (opencc_t) -1 ) {
 		RETURN_FALSE;
 	}
+
+	OPENCC_G(global_opencc_handler) = od;
+    fprintf(stderr, "create a new opencc handler and store into global_opencc_handler[%p]\n", OPENCC_G(global_opencc_handler));
 	#if PHP_MAJOR_VERSION < 7
 		RETURN_RESOURCE((long) od);
 	#else
@@ -79,6 +92,9 @@ PHP_FUNCTION(opencc_open)
     */
 PHP_FUNCTION(opencc_close)
 {
+	//fprintf(stderr, "opencc_close() is not necessary anymore, resource will auto release on php Module shutdown\n");
+	return;
+
 	int argc = ZEND_NUM_ARGS();
 	int ob_id = -1;
 	zval *zod = NULL;
@@ -95,6 +111,7 @@ PHP_FUNCTION(opencc_close)
 		RETURN_FALSE;
 	}
 	#endif
+
 	int res = opencc_close(od);
 
 	if(res == 0) {
@@ -122,6 +139,9 @@ PHP_FUNCTION(opencc_error)
 
 	const char *msg;
 	msg = opencc_error();
+	if(NULL == msg) {
+		msg="";
+	}
 	len = strlen(msg);
 
 	#if PHP_MAJOR_VERSION < 7
@@ -196,14 +216,23 @@ static void php_opencc_init_globals(zend_opencc_globals *opencc_globals)
 
 /* {{{ PHP_MINIT_FUNCTION
  */
+
+static void
+php_opencc_init_globals(zend_opencc_globals *opencc_globals)
+{
+}
+
 PHP_MINIT_FUNCTION(opencc)
 {
 	/* If you have INI entries, uncomment these lines
 	REGISTER_INI_ENTRIES();
 	*/
+
+    ZEND_INIT_MODULE_GLOBALS(opencc, php_opencc_init_globals, NULL); 
 	#ifdef ZEND_ENGINE_3
 	le_opencc = zend_register_list_destructors_ex(NULL, NULL, "opencc_od", module_number);
 	#endif
+	OPENCC_G(global_opencc_handler) = (opencc_t) -1 ;
 	return SUCCESS;
 }
 /* }}} */
@@ -215,6 +244,15 @@ PHP_MSHUTDOWN_FUNCTION(opencc)
 	/* uncomment this line if you have INI entries
 	UNREGISTER_INI_ENTRIES();
 	*/
+	opencc_t od = OPENCC_G(global_opencc_handler);
+	if(od != (opencc_t) -1) {
+		int res = opencc_close(od);
+		if(res == 0) {
+			fprintf(stderr, "module shutdown closing opencc resource[%p] success!\n", od);
+		} else {
+			fprintf(stderr, "module shutdown closing opencc resource[%p] fail!\n", od);
+		}
+	}
 	return SUCCESS;
 }
 /* }}} */
@@ -256,7 +294,7 @@ PHP_MINFO_FUNCTION(opencc)
  * Every user visible function must have an entry in opencc_functions[].
  */
 const zend_function_entry opencc_functions[] = {
-	PHP_FE(opencc_open,	NULL)
+	PHP_FE(opencc_open,		NULL)
 	PHP_FE(opencc_close,	NULL)
 	PHP_FE(opencc_error,	NULL)
 	PHP_FE(opencc_convert,	NULL)
@@ -272,8 +310,8 @@ zend_module_entry opencc_module_entry = {
 	opencc_functions,
 	PHP_MINIT(opencc),
 	PHP_MSHUTDOWN(opencc),
-	NULL,
-	NULL,
+	PHP_RINIT(opencc),
+	PHP_RSHUTDOWN(opencc),
 	PHP_MINFO(opencc),
 	PHP_OPENCC_VERSION,
 	STANDARD_MODULE_PROPERTIES

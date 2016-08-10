@@ -49,6 +49,10 @@ ZEND_BEGIN_MODULE_GLOBALS(opencc)
 	char *global_string;
 ZEND_END_MODULE_GLOBALS(opencc)
 */
+// ref : https://devzone.zend.com/303/extension-writing-part-i-introduction-to-php-and-zend/
+ZEND_BEGIN_MODULE_GLOBALS(opencc)
+	opencc_t global_opencc_handler;
+ZEND_END_MODULE_GLOBALS(opencc)
 
 /* In every utility function you add that needs to use variables 
    in php_opencc_globals, call TSRMLS_FETCH(); after declaring other 
@@ -65,6 +69,13 @@ ZEND_END_MODULE_GLOBALS(opencc)
 #else
 #define OPENCC_G(v) (opencc_globals.v)
 #endif
+
+
+
+// ref : https://devzone.zend.com/303/extension-writing-part-i-introduction-to-php-and-zend/
+PHP_MINIT_FUNCTION(opencc);
+PHP_MSHUTDOWN_FUNCTION(opencc);
+PHP_RINIT_FUNCTION(opencc);
 
 #endif	/* PHP_OPENCC_H */
 
