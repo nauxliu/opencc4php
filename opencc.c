@@ -60,8 +60,6 @@ PHP_FUNCTION(opencc_open)
 		#endif
 	}
 
-	fprintf(stderr, "create a new opencc handler\n");
-
 	#if PHP_MAJOR_VERSION < 7
 		char *config = NULL;
 		int config_len;
@@ -80,7 +78,7 @@ PHP_FUNCTION(opencc_open)
 		RETURN_FALSE;
 	}
 
-    fprintf(stderr, "store to global_opencc_handler[%p]\n", OPENCC_G(global_opencc_handler));
+    fprintf(stderr, "create a new opencc handler and store into global_opencc_handler[%p]\n", OPENCC_G(global_opencc_handler));
 	OPENCC_G(global_opencc_handler) = od;
 	#if PHP_MAJOR_VERSION < 7
 		RETURN_RESOURCE((long) od);
@@ -141,6 +139,9 @@ PHP_FUNCTION(opencc_error)
 
 	const char *msg;
 	msg = opencc_error();
+	if(NULL == msg) {
+		msg="";
+	}
 	len = strlen(msg);
 
 	#if PHP_MAJOR_VERSION < 7
