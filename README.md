@@ -73,3 +73,6 @@ opencc_close($od);
 [@Kyle Tse](https://github.com/shtse8)  
 [@Alliumcepa Triplef](https://github.com/fffonion)  
 [@acgrid](https://github.com/acgrid)  
+[@pkujhd](https://github.com/pkujhd)  
+[@bc](https://github.com/bclow)  
+
