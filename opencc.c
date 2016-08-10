@@ -52,7 +52,7 @@ PHP_FUNCTION(opencc_open)
 {
 	opencc_t od = OPENCC_G(global_opencc_handler);
 	if(od != (opencc_t) -1) {
-		fprintf(stderr, "reuse opencc handler [%p]\n", od);
+		// fprintf(stderr, "reuse opencc handler [%p]\n", od);
 		#if PHP_MAJOR_VERSION < 7
 			RETURN_RESOURCE((long) od);
 		#else
