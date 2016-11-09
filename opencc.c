@@ -50,15 +50,16 @@ PHP_INI_END()
     */
 PHP_FUNCTION(opencc_open)
 {
-	opencc_t od = OPENCC_G(global_opencc_handler);
-	if(od != (opencc_t) -1) {
+	opencc_t od = NULL;
+	// opencc_t od = OPENCC_G(global_opencc_handler);
+	// if(od != (opencc_t) -1) {
 		// fprintf(stderr, "reuse opencc handler [%p]\n", od);
-		#if PHP_MAJOR_VERSION < 7
-			RETURN_RESOURCE((long) od);
-		#else
-			RETURN_RES(zend_register_resource(od, le_opencc));
-		#endif
-	}
+		// #if PHP_MAJOR_VERSION < 7
+			// RETURN_RESOURCE((long) od);
+		// #else
+			// RETURN_RES(zend_register_resource(od, le_opencc));
+		// #endif
+	// }
 
 	#if PHP_MAJOR_VERSION < 7
 		char *config = NULL;
@@ -74,11 +75,12 @@ PHP_FUNCTION(opencc_open)
 		}
 		od = opencc_open(config->val);
 	#endif
+	
 	if( od == (opencc_t) -1 ) {
 		RETURN_FALSE;
 	}
 
-	OPENCC_G(global_opencc_handler) = od;
+	// OPENCC_G(global_opencc_handler) = od;
     /* fprintf(stderr, "create a new opencc handler and store into global_opencc_handler[%p]\n", OPENCC_G(global_opencc_handler)); */
 	#if PHP_MAJOR_VERSION < 7
 		RETURN_RESOURCE((long) od);
@@ -93,7 +95,7 @@ PHP_FUNCTION(opencc_open)
 PHP_FUNCTION(opencc_close)
 {
 	//fprintf(stderr, "opencc_close() is not necessary anymore, resource will auto release on php Module shutdown\n");
-	return;
+	// return;
 
 	int argc = ZEND_NUM_ARGS();
 	int ob_id = -1;
@@ -228,11 +230,11 @@ PHP_MINIT_FUNCTION(opencc)
 	REGISTER_INI_ENTRIES();
 	*/
 
-    ZEND_INIT_MODULE_GLOBALS(opencc, php_opencc_init_globals, NULL); 
+    // ZEND_INIT_MODULE_GLOBALS(opencc, php_opencc_init_globals, NULL); 
 	#ifdef ZEND_ENGINE_3
 	le_opencc = zend_register_list_destructors_ex(NULL, NULL, "opencc_od", module_number);
 	#endif
-	OPENCC_G(global_opencc_handler) = (opencc_t) -1 ;
+	// OPENCC_G(global_opencc_handler) = (opencc_t) -1 ;
 	return SUCCESS;
 }
 /* }}} */
@@ -244,15 +246,15 @@ PHP_MSHUTDOWN_FUNCTION(opencc)
 	/* uncomment this line if you have INI entries
 	UNREGISTER_INI_ENTRIES();
 	*/
-	opencc_t od = OPENCC_G(global_opencc_handler);
-	if(od != (opencc_t) -1) {
-		int res = opencc_close(od);
-		if(res == 0) {
-			fprintf(stderr, "module shutdown closing opencc resource[%p] success!\n", od);
-		} else {
-			fprintf(stderr, "module shutdown closing opencc resource[%p] fail!\n", od);
-		}
-	}
+	// opencc_t od = OPENCC_G(global_opencc_handler);
+	// if(od != (opencc_t) -1) {
+		// int res = opencc_close(od);
+		// if(res == 0) {
+			// fprintf(stderr, "module shutdown closing opencc resource[%p] success!\n", od);
+		// } else {
+			// fprintf(stderr, "module shutdown closing opencc resource[%p] fail!\n", od);
+		// }
+	// }
 	return SUCCESS;
 }
 /* }}} */
