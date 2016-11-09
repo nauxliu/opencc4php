@@ -1,6 +1,6 @@
 /*
   +----------------------------------------------------------------------+
-  | PHP Version 7.0.1 (Backward-Compatiable)                             |
+  | PHP Version 7.1 (Backward-Compatiable)                             |
   +----------------------------------------------------------------------+
   | Copyright (c) 1997-2015 The PHP Group                                |
   +----------------------------------------------------------------------+
@@ -79,7 +79,7 @@ PHP_FUNCTION(opencc_open)
 	}
 
 	OPENCC_G(global_opencc_handler) = od;
-    fprintf(stderr, "create a new opencc handler and store into global_opencc_handler[%p]\n", OPENCC_G(global_opencc_handler));
+    /* fprintf(stderr, "create a new opencc handler and store into global_opencc_handler[%p]\n", OPENCC_G(global_opencc_handler)); */
 	#if PHP_MAJOR_VERSION < 7
 		RETURN_RESOURCE((long) od);
 	#else
