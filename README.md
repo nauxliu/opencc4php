@@ -1,4 +1,4 @@
-#介绍
+# 介绍
 
 [![Build Status](https://travis-ci.org/NauxLiu/opencc4php.svg?branch=master)](https://travis-ci.org/NauxLiu/opencc4php)
 
@@ -6,14 +6,14 @@ opencc4php 是[OpenCC](https://github.com/BYVoid/OpenCC)的PHP扩展，能很智
 
 支持 PHP 版本： 5.3 - 7.1
 
-###转换效果：
+### 转换效果：
 
 `你干什么不干我事` => `你幹什麼不干我事`
 
 地区词汇转换效果：
 `我鼠标哪儿去了` => `我滑鼠哪兒去了`
 
-#安装
+# 安装
 
 #### Linux | OS X
 
@@ -38,9 +38,9 @@ make && sudo make install
 #### Windows
 [Windows 安装说明](https://github.com/NauxLiu/opencc4php/pull/16)
 
-#使用
+# 使用
 
-###实例：
+### 实例：
 ```php
 $od = opencc_open("s2twp.json"); //传入配置文件名
 $text = opencc_convert("我鼠标哪儿去了。", $od);
@@ -50,7 +50,7 @@ opencc_close($od);
 输出:
 `我滑鼠哪兒去了`
 
-###函数列表：
+### 函数列表：
 
 `opencc_open(string ConfigName)`  ConfigName:配置文件名，成功返回资源对象，失败返回false  
 `opencc_close(resource ob)`  关闭资源对象,成功返回true，失败返回false.   
@@ -58,7 +58,7 @@ opencc_close($od);
 `opencc_convert(string str, resource od)` str：要转换的字符串(UTF-8)，od：opencc资源对象  
 
 
-###可用配置
+### 可用配置
 * `s2t.json` 简体到繁体 
 * `t2s.json` 繁体到简体 
 * `s2tw.json` 简体到台湾正体 
