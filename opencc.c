@@ -36,6 +36,11 @@ ZEND_DECLARE_MODULE_GLOBALS(opencc)
 /* True global resources - no need for thread safety here */
 int le_opencc;
 
+typedef struct _php_opencc {
+	char * config;
+	opencc_t od;
+} php_opencc;
+
 /* {{{ PHP_INI
  */
 /* Remove comments and fill if you need to have entries in php.ini
@@ -51,6 +56,8 @@ PHP_INI_END()
 PHP_FUNCTION(opencc_open)
 {
 	opencc_t od = NULL;
+	php_opencc *opencc;
+
 	// opencc_t od = OPENCC_G(global_opencc_handler);
 	// if(od != (opencc_t) -1) {
 		// fprintf(stderr, "reuse opencc handler [%p]\n", od);
@@ -60,32 +67,71 @@ PHP_FUNCTION(opencc_open)
 			// RETURN_RES(zend_register_resource(od, le_opencc));
 		// #endif
 	// }
+	int key_len;
+	char *key;
 
 	#if PHP_MAJOR_VERSION < 7
+
+		zend_rsrc_list_entry *le, new_le;
 		char *config = NULL;
 		int config_len;
 		if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &config, &config_len) == FAILURE) {
 			return;
 		}
-		od = opencc_open(config);
+
+		key_len = spprintf(&key, 0, "opecc4php_%s", config);
+
+		if (zend_hash_find(&EG(persistent_list), key, key_len + 1,(void*) &le) == SUCCESS) {
+			opencc = le->ptr;
+		} else {
+			od = opencc_open(config);
+
+			opencc = pemalloc(sizeof(php_opencc), 1);
+			opencc->od = od;
+			opencc->config = key;
+
+			new_le.ptr = opencc;
+			new_le.type = le_opencc;
+
+			zend_hash_add(&EG(persistent_list), key, key_len + 1, &new_le, sizeof(zend_rsrc_list_entry), NULL);
+		}
+		efree(key);
 	#else
 		zend_string *config;
+		zend_resource *le, new_le;
 		if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "S", &config) == FAILURE) {
 			return;
 		}
-		od = opencc_open(config->val);
-	#endif
-	
-	if( od == (opencc_t) -1 ) {
+
+		key_len = spprintf(&key, 0, "opecc4php_%s", ZSTR_VAL(config));
+
+		le = zend_hash_str_find_ptr(&EG(persistent_list), key, key_len);
+		if (le != NULL) {
+			opencc = (php_opencc*) le->ptr;
+
+		} else {
+			od = opencc_open(ZSTR_VAL(config));
+			opencc = pemalloc(sizeof(php_opencc), 1);
+			opencc->od = od;
+			opencc->config = key;
+
+			new_le.type = le_opencc;
+			new_le.ptr = opencc;
+
+			zend_hash_str_update_mem(&EG(persistent_list), key, key_len, &new_le, sizeof(zend_resource));
+		}
+ 	#endif
+
+	if(opencc == (php_opencc*) -1 ) {
 		RETURN_FALSE;
 	}
 
 	// OPENCC_G(global_opencc_handler) = od;
     /* fprintf(stderr, "create a new opencc handler and store into global_opencc_handler[%p]\n", OPENCC_G(global_opencc_handler)); */
 	#if PHP_MAJOR_VERSION < 7
-		RETURN_RESOURCE((long) od);
+		ZEND_REGISTER_RESOURCE(return_value, opencc, le_opencc);
 	#else
-		RETURN_RES(zend_register_resource(od, le_opencc));
+		RETURN_RES(zend_register_resource(opencc, le_opencc));
 	#endif
 }
 /* }}} */
@@ -100,32 +146,45 @@ PHP_FUNCTION(opencc_close)
 	int argc = ZEND_NUM_ARGS();
 	int ob_id = -1;
 	zval *zod = NULL;
-	opencc_t od;
+	php_opencc *opencc;
+	char *config;
+
+	int key_len;
+	char *key;
 
 	if (zend_parse_parameters(argc TSRMLS_CC, "r", &zod) == FAILURE) {
 		return;
 	}
 
 	#if PHP_MAJOR_VERSION < 7
-	od = (opencc_t)zod->value.lval;
+	ZEND_FETCH_RESOURCE(opencc, php_opencc*, &zod, -1, "OpenCC", le_opencc);
 	#else
-	if ((od = (opencc_t)zend_fetch_resource(Z_RES_P(zod), "OpenCC", le_opencc)) == NULL) {
+	if ((opencc = (opencc_t)zend_fetch_resource(Z_RES_P(zod), "OpenCC", le_opencc)) == NULL) {
 		RETURN_FALSE;
 	}
 	#endif
 
-	int res = opencc_close(od);
 
-	if(res == 0) {
-		#if PHP_MAJOR_VERSION < 7
-		zend_list_delete(Z_RESVAL_P(zod));
-		#else
-		zend_list_close(Z_RES_P(zod));
-		#endif
-		RETURN_TRUE;
-	} else {
-		RETURN_FALSE;
+	#if PHP_MAJOR_VERSION < 7
+	zend_list_delete(Z_RESVAL_P(zod));
+
+	config = opencc->config;
+	key_len = strlen(config);
+
+	if (zend_hash_exists(&EG(persistent_list), key, key_len + 1)) {
+		zend_hash_del(&EG(persistent_list), key, key_len + 1);
 	}
+	efree(key);
+	#else
+	zend_list_close(Z_RES_P(zod));
+
+	config = opencc->config;
+	zend_string *z_key = zend_string_init(config, strlen(config) , 0);
+	if (zend_hash_exists(&EG(persistent_list), z_key)) {
+		zend_hash_del(&EG(persistent_list), z_key);
+	}
+	#endif
+	RETURN_TRUE;
 }
 /* }}} */
 
@@ -163,6 +222,7 @@ PHP_FUNCTION(opencc_convert)
 //	int ob_id = -1;
 	zval *zod;
 	opencc_t od;
+	php_opencc *opencc;
 	char *outstr;
 
 	#if PHP_MAJOR_VERSION < 7
@@ -171,8 +231,9 @@ PHP_FUNCTION(opencc_convert)
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sr", &str, &str_len, &zod) == FAILURE) {
 		return;
 	}
-	od = (opencc_t)zod->value.lval;
 
+	ZEND_FETCH_RESOURCE(opencc, php_opencc*, &zod, -1, "OpenCC", le_opencc);
+	od = opencc->od;
 	outstr = opencc_convert_utf8(od, str, -1);
 
 	int len = strlen(outstr);
@@ -183,15 +244,17 @@ PHP_FUNCTION(opencc_convert)
 
 	RETURN_STRINGL(rs, len, 0);
 	#else
+
 	zend_string *str;
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "Sr", &str, &zod) == FAILURE) {
 		return;
 	}
 
-	if ((od = (opencc_t)zend_fetch_resource(Z_RES_P(zod), "OpenCC", le_opencc)) == NULL) {
+	if ((opencc = (php_opencc*)zend_fetch_resource(Z_RES_P(zod), "OpenCC", le_opencc)) == NULL) {
 		RETURN_FALSE;
 	}
 
+	od = opencc->od;
 	outstr = opencc_convert_utf8(od, str->val, -1);
 	int len = strlen(outstr);
 
@@ -224,16 +287,35 @@ php_opencc_init_globals(zend_opencc_globals *opencc_globals)
 {
 }
 
+#if PHP_MAJOR_VERSION < 7
+static void php_opencc_persist_dtor(zend_rsrc_list_entry *rsrc TSRMLS_DC)
+{
+	php_opencc *opencc = (php_opencc*)rsrc->ptr;
+	if (opencc) {
+		opencc_close(opencc->od);
+	}
+	pefree(opencc, 1);
+}
+
+#else
+static void php_opencc_persist_dtor(zend_resource *rsrc TSRMLS_DC)
+{
+	php_opencc *opencc = (php_opencc*)rsrc->ptr;
+	if (opencc) {
+		opencc_close(opencc->od);
+	}
+	pefree(opencc, 1);
+}
+#endif
+
 PHP_MINIT_FUNCTION(opencc)
 {
 	/* If you have INI entries, uncomment these lines
 	REGISTER_INI_ENTRIES();
 	*/
 
-    // ZEND_INIT_MODULE_GLOBALS(opencc, php_opencc_init_globals, NULL); 
-	#ifdef ZEND_ENGINE_3
-	le_opencc = zend_register_list_destructors_ex(NULL, NULL, "opencc_od", module_number);
-	#endif
+	// ZEND_INIT_MODULE_GLOBALS(opencc, php_opencc_init_globals, NULL);
+	le_opencc = zend_register_list_destructors_ex(NULL, php_opencc_persist_dtor, "OpenCC", module_number);
 	// OPENCC_G(global_opencc_handler) = (opencc_t) -1 ;
 	return SUCCESS;
 }
