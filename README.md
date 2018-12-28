@@ -1,3 +1,15 @@
+# 招募新的维护者
+
+由于工作中极少用到 C， 已经生疏，且没有多余时间维护此项目。
+
+希望你：
+
+* 熟悉PHP 扩展的编写
+* 有足够的时间与精力维护此项目
+* 能够积极的处理 PR 和 Issue
+
+如有兴趣请邮件联系我 `nauxliu@gmail.com`
+
 # 介绍
 
 [![Build Status](https://travis-ci.org/NauxLiu/opencc4php.svg?branch=master)](https://travis-ci.org/NauxLiu/opencc4php)
