@@ -1,6 +1,7 @@
 # opencc4php
 
-[![Build Status](https://travis-ci.org/NauxLiu/opencc4php.svg?branch=master)](https://travis-ci.org/NauxLiu/opencc4php)
+[![Build Status](https://github.com/nauxliu/opencc4php/workflows/Main/badge.svg)](https://github.com/nauxliu/opencc4php/actions) 
+[![LICENSE](https://img.shields.io/github/license/nauxliu/opencc4php)](https://github.com/nauxliu/opencc4php/blob/master/LICENSE) 
 
 opencc4php 是 [OpenCC](https://github.com/BYVoid/OpenCC) 的PHP扩展，能很智能的完成简繁体转换。 
 
