@@ -27,6 +27,5 @@ jobs:
           make
           make install
           docker-php-ext-enable opencc.so
-          # echo "extension=opencc.so" > /etc/php/7.2/cli/conf.d/opencc.ini
       - name: Test
         run: php opencc.php
