@@ -1,22 +1,10 @@
-# 招募新的维护者
-
-由于工作中极少用到 C， 已经生疏，且没有多余时间维护此项目。
-
-希望你：
-
-* 熟悉PHP 扩展的编写
-* 有足够的时间与精力维护此项目
-* 能够积极的处理 PR 和 Issue
-
-如有兴趣请邮件联系我 `nauxliu@gmail.com`
-
-# 介绍
+# opencc4php
 
 [![Build Status](https://travis-ci.org/NauxLiu/opencc4php.svg?branch=master)](https://travis-ci.org/NauxLiu/opencc4php)
 
-opencc4php 是[OpenCC](https://github.com/BYVoid/OpenCC)的PHP扩展，能很智能的完成简繁体转换。 
+opencc4php 是 [OpenCC](https://github.com/BYVoid/OpenCC) 的PHP扩展，能很智能的完成简繁体转换。 
 
-支持 PHP 版本： 5.3 - 7.1
+支持 PHP 版本： 5.3 - 7.X
 
 ### 转换效果：
 
