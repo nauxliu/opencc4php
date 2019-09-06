@@ -54,27 +54,16 @@ PHP_FUNCTION(opencc_open)
 	// opencc_t od = OPENCC_G(global_opencc_handler);
 	// if(od != (opencc_t) -1) {
 		// fprintf(stderr, "reuse opencc handler [%p]\n", od);
-		// #if PHP_MAJOR_VERSION < 7
-			// RETURN_RESOURCE((long) od);
-		// #else
-			// RETURN_RES(zend_register_resource(od, le_opencc));
-		// #endif
+		// RETURN_RES(zend_register_resource(od, le_opencc));
 	// }
 
-	#if PHP_MAJOR_VERSION < 7
-		char *config = NULL;
-		int config_len;
-		if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &config, &config_len) == FAILURE) {
-			return;
-		}
-		od = opencc_open(config);
-	#else
-		zend_string *config;
-		if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "S", &config) == FAILURE) {
-			return;
-		}
-		od = opencc_open(config->val);
-	#endif
+	zend_string *config;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "S", &config) == FAILURE) {
+		return;
+	}
+
+	od = opencc_open(config->val);
 	
 	if( od == (opencc_t) -1 ) {
 		RETURN_FALSE;
@@ -82,11 +71,8 @@ PHP_FUNCTION(opencc_open)
 
 	// OPENCC_G(global_opencc_handler) = od;
     /* fprintf(stderr, "create a new opencc handler and store into global_opencc_handler[%p]\n", OPENCC_G(global_opencc_handler)); */
-	#if PHP_MAJOR_VERSION < 7
-		RETURN_RESOURCE((long) od);
-	#else
-		RETURN_RES(zend_register_resource(od, le_opencc));
-	#endif
+
+	RETURN_RES(zend_register_resource(od, le_opencc));
 }
 /* }}} */
 
@@ -106,22 +92,14 @@ PHP_FUNCTION(opencc_close)
 		return;
 	}
 
-	#if PHP_MAJOR_VERSION < 7
-	od = (opencc_t)zod->value.lval;
-	#else
 	if ((od = (opencc_t)zend_fetch_resource(Z_RES_P(zod), "OpenCC", le_opencc)) == NULL) {
 		RETURN_FALSE;
 	}
-	#endif
 
 	int res = opencc_close(od);
 
 	if(res == 0) {
-		#if PHP_MAJOR_VERSION < 7
-		zend_list_delete(Z_RESVAL_P(zod));
-		#else
 		zend_list_close(Z_RES_P(zod));
-		#endif
 		RETURN_TRUE;
 	} else {
 		RETURN_FALSE;
@@ -146,13 +124,9 @@ PHP_FUNCTION(opencc_error)
 	}
 	len = strlen(msg);
 
-	#if PHP_MAJOR_VERSION < 7
-	RETURN_STRINGL(msg, len, 0);
-	#else
 	zend_string *ret = zend_string_alloc(len, 0);
 	strncpy(ret->val, msg, len);
 	RETURN_STR(ret);
-	#endif
 }
 /* }}} */
 
@@ -165,24 +139,6 @@ PHP_FUNCTION(opencc_convert)
 	opencc_t od;
 	char *outstr;
 
-	#if PHP_MAJOR_VERSION < 7
-	char *str = NULL;
-	int str_len;
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sr", &str, &str_len, &zod) == FAILURE) {
-		return;
-	}
-	od = (opencc_t)zod->value.lval;
-
-	outstr = opencc_convert_utf8(od, str, -1);
-
-	int len = strlen(outstr);
-
-	char * rs = emalloc(sizeof(char) * (len + 1));
-	strncpy(rs, outstr, len + 1);
-	opencc_convert_utf8_free(outstr);
-
-	RETURN_STRINGL(rs, len, 0);
-	#else
 	zend_string *str;
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "Sr", &str, &zod) == FAILURE) {
 		return;
@@ -200,7 +156,6 @@ PHP_FUNCTION(opencc_convert)
 	opencc_convert_utf8_free(outstr);
 
 	RETURN_STR(ret);
-	#endif
 }
 /* }}} */
 
