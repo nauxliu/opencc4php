@@ -23,7 +23,7 @@ opencc4php 是 [OpenCC](https://github.com/BYVoid/OpenCC) 的PHP扩展，能很�
 #### Ubuntu:
 
 ```
-apt-get install libopencc2 libopencc-dev -y
+apt-get install libopencc-dev -y
 ```
 
 #### 从源码安装

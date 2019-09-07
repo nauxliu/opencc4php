@@ -19,7 +19,7 @@ jobs:
       - name: Install OpenCC
         run: |
           apt-get update
-          apt-get install libopencc2 libopencc-dev -y
+          apt-get install libopencc-dev -y
       - name: Build opencc4php
         run: |
           phpize
