@@ -65,7 +65,7 @@ PHP_FUNCTION(opencc_open)
 
 	od = opencc_open(config->val);
 	
-	if( od == (opencc_t) -1 ) {
+	if ( od == (opencc_t) -1 ) {
 		RETURN_FALSE;
 	}
 
@@ -98,7 +98,7 @@ PHP_FUNCTION(opencc_close)
 
 	int res = opencc_close(od);
 
-	if(res == 0) {
+	if (res == 0) {
 		zend_list_close(Z_RES_P(zod));
 		RETURN_TRUE;
 	} else {
@@ -119,9 +119,11 @@ PHP_FUNCTION(opencc_error)
 
 	const char *msg;
 	msg = opencc_error();
-	if(NULL == msg) {
+	
+	if (NULL == msg) {
 		msg="";
 	}
+
 	len = strlen(msg);
 
 	zend_string *ret = zend_string_alloc(len, 0);
@@ -140,6 +142,7 @@ PHP_FUNCTION(opencc_convert)
 	char *outstr;
 
 	zend_string *str;
+
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "Sr", &str, &zod) == FAILURE) {
 		return;
 	}
@@ -149,9 +152,11 @@ PHP_FUNCTION(opencc_convert)
 	}
 
 	outstr = opencc_convert_utf8(od, str->val, -1);
+	
 	if ( outstr == NULL ) {
 		RETURN_FALSE;
 	}
+
 	int len = strlen(outstr);
 
 	zend_string *ret = zend_string_alloc(len, 0);
