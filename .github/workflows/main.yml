@@ -1,0 +1,32 @@
+name: Main
+on:
+  push:
+
+jobs:
+  build:
+    name: CI
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php_version:
+          - 7.1
+          - 7.2
+          - 7.3
+          - 7.4-rc
+    container:
+      image: nauxliu/php-ci-image:${{ matrix.php_version }}
+    steps:
+      - uses: actions/checkout@master
+      - name: Install OpenCC
+        run: |
+          apt-get update
+          apt-get install libopencc-dev -y
+      - name: Build opencc4php
+        run: |
+          phpize
+          ./configure --quiet
+          make
+          make install
+          docker-php-ext-enable opencc.so
+      - name: Test
+        run: php opencc.php

@@ -1,30 +1,42 @@
-# 介绍
+# opencc4php
 
-[![Build Status](https://travis-ci.org/NauxLiu/opencc4php.svg?branch=master)](https://travis-ci.org/NauxLiu/opencc4php)
+[![Build Status](https://github.com/nauxliu/opencc4php/workflows/Main/badge.svg)](https://github.com/nauxliu/opencc4php/actions) 
+[![LICENSE](https://img.shields.io/github/license/nauxliu/opencc4php)](https://github.com/nauxliu/opencc4php/blob/master/LICENSE) 
 
-opencc4php 是[OpenCC](https://github.com/BYVoid/OpenCC)的PHP扩展，能很智能的完成简繁体转换。 
+opencc4php 是 [OpenCC](https://github.com/BYVoid/OpenCC) 的PHP扩展，能很智能的完成简繁体转换。 
 
-支持 PHP 版本： 5.3 - 7.1
+支持 PHP 版本： 7.X
 
 ### 转换效果：
 
 `你干什么不干我事` => `你幹什麼不干我事`
 
-地区词汇转换效果：
+地区词汇转换效果：  
 `我鼠标哪儿去了` => `我滑鼠哪兒去了`
 
 # 安装
 
-#### Linux | OS X
+## Linux | OS X
 
-你需要先安装`1.0.1` 版本以上的OpenCC，安装OpenCC：
+你需要先安装`1.0.1` 版本以上的OpenCC
+
+#### Ubuntu:
+
+```
+apt-get install libopencc-dev -y
+```
+
+#### 从源码安装
+
 ```
 git clone https://github.com/BYVoid/OpenCC.git --depth 1
 cd OpenCC
 make
 sudo make install
 ```
-安装opencc4php：
+
+### 安装opencc4php：
+
 ```
 git clone git@github.com:NauxLiu/opencc4php.git --depth 1
 cd opencc4php
@@ -35,7 +47,7 @@ make && sudo make install
 >如果你的OpenCC安装目录不在`/usr`或`/usr/local`，可在`./configure`时添加`--with-opencc=[DIR]`指定你的OpenCC目录
 
 
-#### Windows
+## Windows
 [Windows 安装说明](https://github.com/NauxLiu/opencc4php/pull/16)
 
 # 使用
