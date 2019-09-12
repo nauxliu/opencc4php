@@ -31,4 +31,4 @@ jobs:
       - name: Test
         run: |
           export TEST_PHP_EXECUTABLE=$(which php)
-          php run-tests.php
+          php run-tests.php --show-diff
