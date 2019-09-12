@@ -29,4 +29,6 @@ jobs:
           make install
           docker-php-ext-enable opencc.so
       - name: Test
-        run: php opencc.php
+        run: |
+          export TEST_PHP_EXECUTABLE=$(which php)
+          php run-tests.php --show-diff

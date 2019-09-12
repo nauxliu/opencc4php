@@ -1,7 +1,5 @@
 --TEST--
 Check for opencc presence
---SKIPIF--
-<?php if (!extension_loaded("opencc")) print "skip"; ?>
 --FILE--
 <?php 
 echo "opencc extension is available";
