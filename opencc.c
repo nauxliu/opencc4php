@@ -149,6 +149,9 @@ PHP_FUNCTION(opencc_convert)
 	}
 
 	outstr = opencc_convert_utf8(od, str->val, -1);
+	if ( outstr == NULL ) {
+		RETURN_FALSE;
+	}
 	int len = strlen(outstr);
 
 	zend_string *ret = zend_string_alloc(len, 0);
