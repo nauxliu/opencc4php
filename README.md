@@ -38,7 +38,7 @@ sudo make install
 ### 安装opencc4php：
 
 ```
-git clone git@github.com:NauxLiu/opencc4php.git --depth 1
+git clone https://github.com/nauxliu/opencc4php.git --depth 1
 cd opencc4php
 phpize
 ./configure
