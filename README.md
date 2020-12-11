@@ -5,7 +5,7 @@
 
 opencc4php 是 [OpenCC](https://github.com/BYVoid/OpenCC) 的PHP扩展，能很智能的完成简繁体转换。 
 
-支持 PHP 版本： 7.X
+支持 PHP 版本： 7.1 - 8.0
 
 ### 转换效果：
 
