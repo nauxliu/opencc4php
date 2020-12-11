@@ -32,7 +32,8 @@ ZEND_DECLARE_MODULE_GLOBALS(opencc)
 */
 ZEND_DECLARE_MODULE_GLOBALS(opencc)
 
-
+ZEND_BEGIN_ARG_INFO_EX(arginfo_void, 0, 0, 0)
+ZEND_END_ARG_INFO()
 /* True global resources - no need for thread safety here */
 int le_opencc;
 
@@ -59,12 +60,12 @@ PHP_FUNCTION(opencc_open)
 
 	zend_string *config;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "S", &config) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "S", &config) == FAILURE) {
 		return;
 	}
 
 	od = opencc_open(config->val);
-	
+
 	if ( od == (opencc_t) -1 ) {
 		RETURN_FALSE;
 	}
@@ -88,7 +89,7 @@ PHP_FUNCTION(opencc_close)
 	zval *zod = NULL;
 	opencc_t od;
 
-	if (zend_parse_parameters(argc TSRMLS_CC, "r", &zod) == FAILURE) {
+	if (zend_parse_parameters(argc, "r", &zod) == FAILURE) {
 		return;
 	}
 
@@ -119,7 +120,7 @@ PHP_FUNCTION(opencc_error)
 
 	const char *msg;
 	msg = opencc_error();
-	
+
 	if (NULL == msg) {
 		msg="";
 	}
@@ -143,7 +144,7 @@ PHP_FUNCTION(opencc_convert)
 
 	zend_string *str;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "Sr", &str, &zod) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "Sr", &str, &zod) == FAILURE) {
 		return;
 	}
 
@@ -152,7 +153,7 @@ PHP_FUNCTION(opencc_convert)
 	}
 
 	outstr = opencc_convert_utf8(od, str->val, -1);
-	
+
 	if ( outstr == NULL ) {
 		RETURN_FALSE;
 	}
@@ -193,7 +194,7 @@ PHP_MINIT_FUNCTION(opencc)
 	REGISTER_INI_ENTRIES();
 	*/
 
-    // ZEND_INIT_MODULE_GLOBALS(opencc, php_opencc_init_globals, NULL); 
+    // ZEND_INIT_MODULE_GLOBALS(opencc, php_opencc_init_globals, NULL);
 	#ifdef ZEND_ENGINE_3
 	le_opencc = zend_register_list_destructors_ex(NULL, NULL, "opencc_od", module_number);
 	#endif
@@ -259,10 +260,10 @@ PHP_MINFO_FUNCTION(opencc)
  * Every user visible function must have an entry in opencc_functions[].
  */
 const zend_function_entry opencc_functions[] = {
-	PHP_FE(opencc_open,		NULL)
-	PHP_FE(opencc_close,	NULL)
-	PHP_FE(opencc_error,	NULL)
-	PHP_FE(opencc_convert,	NULL)
+	PHP_FE(opencc_open,	arginfo_void)
+	PHP_FE(opencc_close,	arginfo_void)
+	PHP_FE(opencc_error,	arginfo_void)
+	PHP_FE(opencc_convert,	arginfo_void)
 	PHP_FE_END	/* Must be the last line in opencc_functions[] */
 };
 /* }}} */
