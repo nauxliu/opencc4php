@@ -38,7 +38,7 @@ sudo make install
 ### 安装opencc4php：
 
 ```
-git clone git@github.com:NauxLiu/opencc4php.git --depth 1
+git clone git@github.com:nauxliu/opencc4php.git --depth 1
 cd opencc4php
 phpize
 ./configure
@@ -48,7 +48,7 @@ make && sudo make install
 
 
 ## Windows
-[Windows 安装说明](https://github.com/NauxLiu/opencc4php/pull/16)
+[Windows 安装说明](https://github.com/nauxliu/opencc4php/pull/16)
 
 # 使用
 
@@ -81,7 +81,7 @@ opencc_close($od);
 * `tw2sp.json` 繁体（台湾正体标准）到简体并转换为中国大陆常用词汇
 
 # 贡献列表
-[@刘相轩](https://github.com/NauxLiu)  
+[@刘相轩](https://github.com/nauxliu)  
 [@Kyle Tse](https://github.com/shtse8)  
 [@Alliumcepa Triplef](https://github.com/fffonion)  
 [@acgrid](https://github.com/acgrid)  
